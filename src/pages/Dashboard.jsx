@@ -1,16 +1,5 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
-import {
-  Box, Typography, Paper, Grid, Avatar, CircularProgress, Button, Divider
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import GroupIcon from '@mui/icons-material/Group';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-
-const red = '#b91c1c';
-const gold = '#fbbf24';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -60,10 +49,10 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 300 }}>
-        <CircularProgress sx={{ color: gold, mb: 2 }} size={48} />
-        <Typography variant="h6" color="text.secondary">Loading dashboard...</Typography>
-      </Box>
+      <div className="flex flex-col items-center justify-center h-64 bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
+        <div className="text-lg text-gray-600">Loading dashboard...</div>
+      </div>
     );
   }
 
@@ -71,212 +60,164 @@ const Dashboard = () => {
     {
       title: 'Total Users',
       value: stats.totalUsers,
-      icon: <GroupIcon fontSize="large" />, 
-      color: '#2563eb',
-      bgColor: 'rgba(37,99,235,0.08)'
+      icon: '👥',
+      color: 'bg-red-500',
+      bgColor: 'bg-red-50'
     },
     {
       title: 'Total Orders',
       value: stats.totalOrders,
-      icon: <ShoppingCartIcon fontSize="large" />, 
-      color: '#16a34a',
-      bgColor: 'rgba(22,163,74,0.08)'
+      icon: '🛒',
+      color: 'bg-red-600',
+      bgColor: 'bg-red-50'
     },
     {
       title: 'Total Products',
       value: stats.totalProducts,
-      icon: <InventoryIcon fontSize="large" />, 
-      color: '#9333ea',
-      bgColor: 'rgba(147,51,234,0.08)'
+      icon: '📦',
+      color: 'bg-red-700',
+      bgColor: 'bg-red-50'
     },
     {
       title: 'Total Revenue',
       value: `$${stats.totalRevenue.toFixed(2)}`,
-      icon: <MonetizationOnIcon fontSize="large" />, 
-      color: gold,
-      bgColor: 'rgba(251,191,36,0.08)'
+      icon: '💰',
+      color: 'bg-red-800',
+      bgColor: 'bg-red-50'
     }
   ];
 
   return (
-    <Box sx={{ width: '100%', maxWidth: 1400, mx: 'auto', mt: 2 }}>
-      <Box sx={{ textAlign: { xs: 'center', md: 'left' }, mb: 3 }}>
-        <Typography variant="h4" fontWeight={700} color={red} mb={0.5}>
-          Dashboard
-        </Typography>
-        <Typography variant="h6" color={gold} fontWeight={600}>
-          Welcome to your Fetan platform overview
-        </Typography>
-      </Box>
-      {/* Statistics Cards */}
-      <Grid container spacing={3} mb={3}>
-        {statCards.map((card, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <Paper elevation={4} sx={{
-              p: 3,
-              borderRadius: 3,
-              bgcolor: '#fff',
-              boxShadow: 6,
-              transition: 'transform 0.2s',
-              '&:hover': { transform: 'scale(1.03)', boxShadow: 12 },
-            }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Avatar sx={{ bgcolor: card.color, color: '#fff', mr: 2 }}>{card.icon}</Avatar>
-                <Box>
-                  <Typography variant="subtitle2" color="text.secondary">{card.title}</Typography>
-                  <Typography variant="h5" fontWeight={700} color={card.color}>{card.value}</Typography>
-                </Box>
-              </Box>
-              <Divider sx={{ mt: 1, bgcolor: card.color, height: 3, borderRadius: 2 }} />
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
-      {/* Recent Activity */}
-      <Grid container spacing={3} mb={3}>
-        {/* Recent Orders */}
-        <Grid item xs={12} md={6}>
-          <Paper elevation={3} sx={{ borderRadius: 3, p: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Avatar sx={{ bgcolor: red, mr: 2 }}><ShoppingCartIcon /></Avatar>
-              <Typography variant="h6" fontWeight={700} color={red}>Recent Orders</Typography>
-            </Box>
-            <Divider sx={{ mb: 2 }} />
-            {stats.recentOrders.length > 0 ? (
-              <Box>
-                {stats.recentOrders.map((order) => (
-                  <Paper key={order._id} sx={{ p: 2, mb: 1.5, borderRadius: 2, bgcolor: 'rgba(251,191,36,0.06)' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar sx={{ bgcolor: gold, color: red, mr: 2, width: 36, height: 36, fontWeight: 700 }}>#</Avatar>
-                        <Box>
-                          <Typography fontWeight={600} color={red}>Order #{order.orderNumber}</Typography>
-                          <Typography variant="body2" color="text.secondary">${order.total} • {order.status}</Typography>
-                        </Box>
-                      </Box>
-                      <Typography variant="body2" color="text.secondary">
-                        {new Date(order.createdAt).toLocaleDateString()}
-                      </Typography>
-                    </Box>
-                  </Paper>
-                ))}
-              </Box>
-            ) : (
-              <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Avatar sx={{ bgcolor: gold, color: red, width: 56, height: 56, mx: 'auto', mb: 2 }}><InventoryIcon /></Avatar>
-                <Typography color="text.secondary">No recent orders</Typography>
-              </Box>
-            )}
-          </Paper>
-        </Grid>
-        {/* Recent Users */}
-        <Grid item xs={12} md={6}>
-          <Paper elevation={3} sx={{ borderRadius: 3, p: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Avatar sx={{ bgcolor: gold, color: red, mr: 2 }}><GroupIcon /></Avatar>
-              <Typography variant="h6" fontWeight={700} color={gold}>Recent Users</Typography>
-            </Box>
-            <Divider sx={{ mb: 2 }} />
-            {stats.recentUsers.length > 0 ? (
-              <Box>
-                {stats.recentUsers.map((user) => (
-                  <Paper key={user._id} sx={{ p: 2, mb: 1.5, borderRadius: 2, bgcolor: 'rgba(185,28,28,0.06)' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar sx={{ bgcolor: red, color: gold, mr: 2, width: 36, height: 36, fontWeight: 700 }}>
-                          {user.fullName?.charAt(0)?.toUpperCase() || 'U'}
-                        </Avatar>
-                        <Box>
-                          <Typography fontWeight={600} color={gold}>{user.fullName}</Typography>
-                          <Typography variant="body2" color="text.secondary">{user.telegramId} • {user.subscriptionStatus}</Typography>
-                        </Box>
-                      </Box>
-                      <Typography variant="body2" color="text.secondary">
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </Typography>
-                    </Box>
-                  </Paper>
-                ))}
-              </Box>
-            ) : (
-              <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Avatar sx={{ bgcolor: red, color: gold, width: 56, height: 56, mx: 'auto', mb: 2 }}><GroupIcon /></Avatar>
-                <Typography color="text.secondary">No recent users</Typography>
-              </Box>
-            )}
-          </Paper>
-        </Grid>
-      </Grid>
-      {/* Quick Actions */}
-      <Paper elevation={2} sx={{ borderRadius: 3, p: 3, background: `linear-gradient(90deg, #fff7ed 60%, ${gold}11 100%)`, border: `1px solid ${gold}33` }}>
-        <Typography variant="h6" fontWeight={700} color={red} mb={2}>Quick Actions</Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={6} sm={3}>
-            <Button fullWidth variant="contained" startIcon={<AddIcon />} sx={{
-              background: `linear-gradient(90deg, ${red} 60%, ${gold} 100%)`,
-              color: '#fff',
-              fontWeight: 700,
-              borderRadius: 2,
-              py: 2,
-              boxShadow: 2,
-              '&:hover': {
-                background: `linear-gradient(90deg, #991b1b 60%, #d97706 100%)`,
-              },
-            }}>
-              Add Product
-            </Button>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Button fullWidth variant="contained" startIcon={<GroupIcon />} sx={{
-              background: `linear-gradient(90deg, ${gold} 60%, ${red} 100%)`,
-              color: red,
-              fontWeight: 700,
-              borderRadius: 2,
-              py: 2,
-              boxShadow: 2,
-              '&:hover': {
-                background: `linear-gradient(90deg, #d97706 60%, #991b1b 100%)`,
-                color: '#fff',
-              },
-            }}>
-              View Users
-            </Button>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Button fullWidth variant="contained" startIcon={<ShoppingCartIcon />} sx={{
-              background: `linear-gradient(90deg, ${red} 60%, ${gold} 100%)`,
-              color: '#fff',
-              fontWeight: 700,
-              borderRadius: 2,
-              py: 2,
-              boxShadow: 2,
-              '&:hover': {
-                background: `linear-gradient(90deg, #991b1b 60%, #d97706 100%)`,
-              },
-            }}>
-              Manage Orders
-            </Button>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Button fullWidth variant="contained" startIcon={<MonetizationOnIcon />} sx={{
-              background: `linear-gradient(90deg, ${gold} 60%, ${red} 100%)`,
-              color: red,
-              fontWeight: 700,
-              borderRadius: 2,
-              py: 2,
-              boxShadow: 2,
-              '&:hover': {
-                background: `linear-gradient(90deg, #d97706 60%, #991b1b 100%)`,
-                color: '#fff',
-              },
-            }}>
-              Analytics
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
-    </Box>
+    <div className="min-h-screen bg-white p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-red-600 mb-2">Dashboard</h1>
+          <p className="text-xl text-gray-600">Welcome to your Fetan platform overview</p>
+        </div>
+
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {statCards.map((card, index) => (
+            <div key={index} className="bg-white rounded-2xl shadow-lg border border-red-100 p-6 hover:shadow-xl transition-shadow duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <div className={`w-12 h-12 ${card.color} rounded-xl flex items-center justify-center text-white text-2xl`}>
+                  {card.icon}
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-500 font-medium">{card.title}</p>
+                  <p className="text-2xl font-bold text-red-600">{card.value}</p>
+                </div>
+              </div>
+              <div className="w-full bg-red-100 rounded-full h-2">
+                <div className="bg-red-600 h-2 rounded-full" style={{ width: '75%' }}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Recent Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Recent Orders */}
+          <div className="bg-white rounded-2xl shadow-lg border border-red-100 p-6">
+            <div className="flex items-center mb-6">
+              <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center text-white text-xl mr-3">
+                🛒
+              </div>
+              <h3 className="text-xl font-bold text-red-600">Recent Orders</h3>
+            </div>
+            <div className="space-y-4">
+              {stats.recentOrders.length > 0 ? (
+                stats.recentOrders.map((order) => (
+                  <div key={order._id} className="flex items-center justify-between p-4 bg-red-50 rounded-xl border border-red-100">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white text-sm font-bold mr-3">
+                        #
+                      </div>
+                      <div>
+                        <p className="font-semibold text-red-600">Order #{order.orderNumber}</p>
+                        <p className="text-sm text-gray-500">${order.total} • {order.status}</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl">📦</span>
+                  </div>
+                  <p className="text-gray-500">No recent orders</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Recent Users */}
+          <div className="bg-white rounded-2xl shadow-lg border border-red-100 p-6">
+            <div className="flex items-center mb-6">
+              <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center text-white text-xl mr-3">
+                👥
+              </div>
+              <h3 className="text-xl font-bold text-red-600">Recent Users</h3>
+            </div>
+            <div className="space-y-4">
+              {stats.recentUsers.length > 0 ? (
+                stats.recentUsers.map((user) => (
+                  <div key={user._id} className="flex items-center justify-between p-4 bg-red-50 rounded-xl border border-red-100">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white text-sm font-bold mr-3">
+                        {user.fullName?.charAt(0)?.toUpperCase() || 'U'}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-red-600">{user.fullName}</p>
+                        <p className="text-sm text-gray-500">{user.telegramId} • {user.subscriptionStatus}</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl">👥</span>
+                  </div>
+                  <p className="text-gray-500">No recent users</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-2xl shadow-lg border border-red-100 p-6">
+          <h3 className="text-xl font-bold text-red-600 mb-6">Quick Actions</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button className="flex flex-col items-center p-4 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200">
+              <span className="text-2xl mb-2">➕</span>
+              <span className="font-semibold">Add Product</span>
+            </button>
+            <button className="flex flex-col items-center p-4 bg-white text-red-600 border-2 border-red-600 rounded-xl hover:bg-red-50 transition-colors duration-200">
+              <span className="text-2xl mb-2">👥</span>
+              <span className="font-semibold">View Users</span>
+            </button>
+            <button className="flex flex-col items-center p-4 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200">
+              <span className="text-2xl mb-2">🛒</span>
+              <span className="font-semibold">Manage Orders</span>
+            </button>
+            <button className="flex flex-col items-center p-4 bg-white text-red-600 border-2 border-red-600 rounded-xl hover:bg-red-50 transition-colors duration-200">
+              <span className="text-2xl mb-2">📊</span>
+              <span className="font-semibold">Analytics</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

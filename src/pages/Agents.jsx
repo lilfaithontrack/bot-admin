@@ -67,105 +67,139 @@ const Agents = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 bg-black">
-        <div className="text-lg text-white">Loading agents...</div>
+      <div className="flex flex-col items-center justify-center h-64 bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
+        <div className="text-lg text-gray-600">Loading agents...</div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 bg-black min-h-screen px-2 md:px-8 py-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Agents</h1>
-          <p className="text-gray-300">Manage sales agents and their permissions</p>
-        </div>
-        <button
-          onClick={() => {
-            setIsCreating(true);
-            setSelectedAgent(null);
-            setShowModal(true);
-          }}
-          className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 shadow-md transition"
-        >
-          Add Agent
-        </button>
-      </div>
-
-      {/* Agents Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {agents.map((agent) => (
-          <div key={agent._id} className="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between min-h-[260px] hover-scale transition">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-semibold text-black">{agent.fullName}</h3>
-              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                agent.isActive 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-red-100 text-red-800'
-              }`}>
-                {agent.isActive ? 'Active' : 'Inactive'}
-              </span>
-            </div>
-            <div className="space-y-2 mb-4">
-              <div className="text-sm text-gray-700">{agent.email}</div>
-              <div className="text-sm text-gray-500">Phone: {agent.phone}</div>
-              <div className="text-sm text-gray-500">Referral Code: {agent.referralCode}</div>
-              {agent.commission && (
-                <div className="text-sm text-gray-500">
-                  Commission: {agent.commission}%
-                </div>
-              )}
-              {agent.permissions && agent.permissions.length > 0 && (
-                <div className="text-sm text-gray-500">
-                  Permissions: {agent.permissions.join(', ')}
-                </div>
-              )}
-              {agent.lastLogin && (
-                <div className="text-sm text-gray-500">
-                  Last Login: {new Date(agent.lastLogin).toLocaleDateString()}
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-              <button
-                onClick={() => {
-                  setSelectedAgent(agent);
-                  setIsCreating(false);
-                  setShowModal(true);
-                }}
-                className="flex-1 px-3 py-2 text-sm font-medium text-red-600 border border-red-600 rounded-md hover:bg-red-50 transition"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleToggleAgentStatus(agent._id, agent.isActive)}
-                className={`flex-1 px-3 py-2 text-sm font-medium rounded-md border transition ${
-                  agent.isActive
-                    ? 'text-white bg-red-600 border-red-600 hover:bg-red-700'
-                    : 'text-white bg-green-600 border-green-600 hover:bg-green-700'
-                }`}
-              >
-                {agent.isActive ? 'Deactivate' : 'Activate'}
-              </button>
-              <button
-                onClick={() => handleDeleteAgent(agent._id)}
-                className="flex-1 px-3 py-2 text-sm font-medium text-white bg-black border border-red-600 rounded-md hover:bg-red-600 hover:text-white transition"
-              >
-                Delete
-              </button>
-            </div>
+    <div className="min-h-screen bg-white p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-red-600 mb-2">Agents</h1>
+            <p className="text-xl text-gray-600">Manage sales agents and their permissions</p>
           </div>
-        ))}
-      </div>
+          <button
+            onClick={() => {
+              setIsCreating(true);
+              setSelectedAgent(null);
+              setShowModal(true);
+            }}
+            className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 font-semibold"
+          >
+            <span>👨‍💼</span>
+            Add Agent
+          </button>
+        </div>
 
-      {/* Agent Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 px-2">
-          <div className="relative w-full max-w-md mx-auto p-6 border border-red-600 shadow-2xl rounded-xl bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-bold text-black mb-4">
-                {isCreating ? 'Add New Agent' : 'Edit Agent'}
-              </h3>
+        {/* Agents Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {agents.map((agent) => (
+            <div key={agent._id} className="bg-white rounded-2xl shadow-lg border border-red-100 p-6 hover:shadow-xl transition-shadow duration-300">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center text-white text-lg font-bold">
+                    {agent.fullName?.charAt(0)?.toUpperCase() || 'A'}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-red-600">{agent.fullName}</h3>
+                    <p className="text-sm text-gray-500">{agent.email}</p>
+                  </div>
+                </div>
+                <span className={`px-3 py-1 text-xs font-bold rounded-full ${
+                  agent.isActive 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {agent.isActive ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center text-sm text-gray-600">
+                  <span className="w-4 mr-2">📞</span>
+                  <span>{agent.phone}</span>
+                </div>
+                <div className="flex items-center text-sm text-gray-600">
+                  <span className="w-4 mr-2">🔗</span>
+                  <span>Code: {agent.referralCode}</span>
+                </div>
+                {agent.commission && (
+                  <div className="flex items-center text-sm text-gray-600">
+                    <span className="w-4 mr-2">💰</span>
+                    <span>Commission: {agent.commission}%</span>
+                  </div>
+                )}
+                {agent.permissions && agent.permissions.length > 0 && (
+                  <div className="bg-red-50 rounded-lg p-3 border border-red-100">
+                    <p className="text-xs text-gray-600">
+                      <span className="font-semibold text-red-600">Permissions:</span> {agent.permissions.join(', ')}
+                    </p>
+                  </div>
+                )}
+                {agent.lastLogin && (
+                  <div className="text-xs text-gray-500">
+                    Last Login: {new Date(agent.lastLogin).toLocaleDateString()}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setSelectedAgent(agent);
+                    setIsCreating(false);
+                    setShowModal(true);
+                  }}
+                  className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm font-semibold"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleToggleAgentStatus(agent._id, agent.isActive)}
+                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 ${
+                    agent.isActive
+                      ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                      : 'bg-green-100 text-green-600 hover:bg-green-200'
+                  }`}
+                >
+                  {agent.isActive ? 'Deactivate' : 'Activate'}
+                </button>
+                <button
+                  onClick={() => handleDeleteAgent(agent._id)}
+                  className="px-3 py-2 bg-gray-100 text-red-600 rounded-lg hover:bg-red-50 transition-colors duration-200 text-sm font-semibold"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Agent Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-red-600">
+                  {isCreating ? 'Add New Agent' : 'Edit Agent'}
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    setSelectedAgent(null);
+                    setIsCreating(false);
+                  }}
+                  className="text-gray-400 hover:text-red-600 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
               <form onSubmit={(e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
@@ -187,93 +221,80 @@ const Agents = () => {
               }}>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-black">
-                      Full Name
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Full Name</label>
                     <input
                       type="text"
                       name="fullName"
                       defaultValue={selectedAgent?.fullName}
                       required
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white text-black"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-black">
-                      Email
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Email</label>
                     <input
                       type="email"
                       name="email"
                       defaultValue={selectedAgent?.email}
                       required
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white text-black"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-black">
-                      Phone
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Phone</label>
                     <input
                       type="text"
                       name="phone"
                       defaultValue={selectedAgent?.phone}
                       required
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white text-black"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                     />
                   </div>
                   {isCreating && (
                     <div>
-                      <label className="block text-sm font-medium text-black">
-                        Password
-                      </label>
+                      <label className="block text-sm font-semibold text-red-600 mb-2">Password</label>
                       <input
                         type="password"
                         name="password"
                         required
-                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white text-black"
+                        className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                       />
                     </div>
                   )}
                   <div>
-                    <label className="block text-sm font-medium text-black">
-                      Commission (%)
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Commission (%)</label>
                     <input
                       type="number"
                       name="commission"
                       step="0.01"
                       defaultValue={selectedAgent?.commission || 0}
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white text-black"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-black">
-                      Permissions
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Permissions</label>
                     <input
                       type="text"
                       name="permissions"
                       defaultValue={selectedAgent?.permissions?.join(', ')}
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white text-black"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                       placeholder="view_orders, manage_products, etc."
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-black">
-                      Status
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Status</label>
                     <select
                       name="isActive"
                       defaultValue={selectedAgent?.isActive?.toString() || 'true'}
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white text-black"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                     >
                       <option value="true">Active</option>
                       <option value="false">Inactive</option>
                     </select>
                   </div>
                 </div>
-                <div className="flex justify-end space-x-3 mt-6">
+
+                <div className="flex gap-3 mt-6">
                   <button
                     type="button"
                     onClick={() => {
@@ -281,13 +302,13 @@ const Agents = () => {
                       setSelectedAgent(null);
                       setIsCreating(false);
                     }}
-                    className="px-4 py-2 text-sm font-medium text-black bg-gray-100 rounded-md hover:bg-gray-200 border border-gray-300"
+                    className="flex-1 px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors duration-200 font-semibold"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 shadow-md"
+                    className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 font-semibold"
                   >
                     {isCreating ? 'Create Agent' : 'Save Changes'}
                   </button>
@@ -295,10 +316,10 @@ const Agents = () => {
               </form>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
 
-export default Agents; 
+export default Agents;

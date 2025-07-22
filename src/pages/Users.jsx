@@ -1,16 +1,5 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
-import {
-  Box, Typography, Paper, Grid, Avatar, Button, TextField, Chip, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, MenuItem, IconButton
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import ToggleOnIcon from '@mui/icons-material/ToggleOn';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';
-import CloseIcon from '@mui/icons-material/Close';
-import GroupIcon from '@mui/icons-material/Group';
-
-const red = '#b91c1c';
-const gold = '#fbbf24';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -62,170 +51,203 @@ const Users = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 300 }}>
-        <CircularProgress sx={{ color: gold, mb: 2 }} size={48} />
-        <Typography variant="h6" color="text.secondary">Loading users...</Typography>
-      </Box>
+      <div className="flex flex-col items-center justify-center h-64 bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
+        <div className="text-lg text-gray-600">Loading users...</div>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ width: '100%', maxWidth: 1400, mx: 'auto', mt: 2 }}>
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2, mb: 3 }}>
-        <Box>
-          <Typography variant="h4" fontWeight={700} color={red} mb={0.5}>Users</Typography>
-          <Typography variant="h6" color={gold} fontWeight={600}>Manage your platform users</Typography>
-        </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Avatar sx={{ bgcolor: red, color: '#fff', width: 32, height: 32 }}><GroupIcon /></Avatar>
-          <Typography variant="body1" color="text.secondary">{filteredUsers.length} users</Typography>
-        </Box>
-      </Box>
-      {/* Search */}
-      <Paper elevation={2} sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-        <TextField
-          label="Search Users"
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          fullWidth
-          InputProps={{ sx: { borderRadius: 2 } }}
-          placeholder="Search by name, Telegram ID, or phone..."
-        />
-      </Paper>
-      {/* Users Table */}
-      <Paper elevation={3} sx={{ borderRadius: 3, overflow: 'auto' }}>
-        <Box sx={{ minWidth: 800 }}>
-          <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-            <Box component="table" sx={{ width: '100%', borderCollapse: 'collapse' }}>
-              <Box component="thead" sx={{ background: `linear-gradient(90deg, ${red} 60%, ${gold} 100%)` }}>
-                <Box component="tr">
-                  <Box component="th" sx={{ px: 3, py: 2, color: '#fff', fontWeight: 700, textAlign: 'left' }}>User</Box>
-                  <Box component="th" sx={{ px: 3, py: 2, color: '#fff', fontWeight: 700, textAlign: 'left' }}>Telegram ID</Box>
-                  <Box component="th" sx={{ px: 3, py: 2, color: '#fff', fontWeight: 700, textAlign: 'left' }}>Phone</Box>
-                  <Box component="th" sx={{ px: 3, py: 2, color: '#fff', fontWeight: 700, textAlign: 'left' }}>Status</Box>
-                  <Box component="th" sx={{ px: 3, py: 2, color: '#fff', fontWeight: 700, textAlign: 'left' }}>Subscription</Box>
-                  <Box component="th" sx={{ px: 3, py: 2, color: '#fff', fontWeight: 700, textAlign: 'left' }}>Actions</Box>
-                </Box>
-              </Box>
-              <Box component="tbody">
-                {filteredUsers.map((user) => (
-                  <Box component="tr" key={user._id} sx={{ '&:hover': { background: '#f3f4f6' } }}>
-                    <Box component="td" sx={{ px: 3, py: 2 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar sx={{ bgcolor: gold, color: red, mr: 2 }}>
-                          {user.fullName?.charAt(0)?.toUpperCase()}
-                        </Avatar>
-                        <Box>
-                          <Typography fontWeight={600}>{user.fullName}</Typography>
-                          <Typography variant="body2" color="text.secondary">@{user.username || 'No username'}</Typography>
-                        </Box>
-                      </Box>
-                    </Box>
-                    <Box component="td" sx={{ px: 3, py: 2 }}>{user.telegramId}</Box>
-                    <Box component="td" sx={{ px: 3, py: 2 }}>{user.phone}</Box>
-                    <Box component="td" sx={{ px: 3, py: 2 }}>
-                      <Chip
-                        label={user.isActive ? 'Active' : 'Inactive'}
-                        sx={{
-                          bgcolor: user.isActive ? 'rgba(22,163,74,0.15)' : 'rgba(185,28,28,0.15)',
-                          color: user.isActive ? '#16a34a' : red,
-                          fontWeight: 700
-                        }}
-                      />
-                    </Box>
-                    <Box component="td" sx={{ px: 3, py: 2 }}>
-                      <Chip
-                        label={user.subscriptionStatus}
-                        sx={{
-                          bgcolor:
-                            user.subscriptionStatus === 'active'
-                              ? 'rgba(22,163,74,0.15)'
-                              : user.subscriptionStatus === 'expired'
-                              ? 'rgba(185,28,28,0.15)'
-                              : 'rgba(251,191,36,0.15)',
-                          color:
-                            user.subscriptionStatus === 'active'
-                              ? '#16a34a'
-                              : user.subscriptionStatus === 'expired'
-                              ? red
-                              : gold,
-                          fontWeight: 700
-                        }}
-                      />
-                    </Box>
-                    <Box component="td" sx={{ px: 3, py: 2 }}>
-                      <IconButton color="primary" onClick={() => { setSelectedUser(user); setShowModal(true); }}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        color={user.isActive ? 'error' : 'success'}
-                        onClick={() => handleToggleUserStatus(user._id, user.isActive)}
-                      >
-                        {user.isActive ? <ToggleOffIcon /> : <ToggleOnIcon />}
-                      </IconButton>
-                    </Box>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      </Paper>
-      {/* Edit User Modal */}
-      <Dialog open={showModal && !!selectedUser} onClose={() => { setShowModal(false); setSelectedUser(null); }} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ bgcolor: gold, color: red, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          Edit User
-          <IconButton onClick={() => { setShowModal(false); setSelectedUser(null); }}>
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <Box component="form" id="edit-user-form" onSubmit={e => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            handleUpdateUser(selectedUser._id, {
-              fullName: formData.get('fullName'),
-              phone: formData.get('phone'),
-              subscriptionStatus: formData.get('subscriptionStatus')
-            });
-          }} sx={{ mt: 2 }}>
-            <TextField
-              label="Full Name"
-              name="fullName"
-              defaultValue={selectedUser?.fullName}
-              fullWidth
-              required
-              margin="normal"
+    <div className="min-h-screen bg-white p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-red-600 mb-2">Users</h1>
+            <p className="text-xl text-gray-600">Manage your platform users</p>
+          </div>
+          <div className="flex items-center gap-3 bg-red-50 px-4 py-2 rounded-xl border border-red-100">
+            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white">
+              👥
+            </div>
+            <span className="text-red-600 font-semibold">{filteredUsers.length} users</span>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="bg-white rounded-2xl shadow-lg border border-red-100 p-6 mb-8">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search by name, Telegram ID, or phone..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
             />
-            <TextField
-              label="Phone"
-              name="phone"
-              defaultValue={selectedUser?.phone}
-              fullWidth
-              required
-              margin="normal"
-            />
-            <TextField
-              label="Subscription Status"
-              name="subscriptionStatus"
-              defaultValue={selectedUser?.subscriptionStatus}
-              select
-              fullWidth
-              margin="normal"
-            >
-              <MenuItem value="pending">Pending</MenuItem>
-              <MenuItem value="active">Active</MenuItem>
-              <MenuItem value="expired">Expired</MenuItem>
-            </TextField>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => { setShowModal(false); setSelectedUser(null); }} color="inherit">Cancel</Button>
-          <Button type="submit" form="edit-user-form" variant="contained" sx={{ background: `linear-gradient(90deg, ${red} 60%, ${gold} 100%)`, color: '#fff', fontWeight: 700 }}>Save Changes</Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-red-400">
+              🔍
+            </div>
+          </div>
+        </div>
+
+        {/* Users Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredUsers.map((user) => (
+            <div key={user._id} className="bg-white rounded-2xl shadow-lg border border-red-100 p-6 hover:shadow-xl transition-shadow duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center text-white text-lg font-bold mr-3">
+                    {user.fullName?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-red-600">{user.fullName}</h3>
+                    <p className="text-sm text-gray-500">@{user.username || 'No username'}</p>
+                  </div>
+                </div>
+                <span className={`px-3 py-1 text-xs font-bold rounded-full ${
+                  user.isActive 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {user.isActive ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center text-sm text-gray-600">
+                  <span className="w-4 mr-2">📱</span>
+                  <span>{user.telegramId}</span>
+                </div>
+                <div className="flex items-center text-sm text-gray-600">
+                  <span className="w-4 mr-2">📞</span>
+                  <span>{user.phone}</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <span className="w-4 mr-2">💳</span>
+                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                    user.subscriptionStatus === 'active'
+                      ? 'bg-green-100 text-green-800'
+                      : user.subscriptionStatus === 'expired'
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {user.subscriptionStatus}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setShowModal(true);
+                  }}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 font-semibold"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleToggleUserStatus(user._id, user.isActive)}
+                  className={`flex-1 px-4 py-2 rounded-xl font-semibold transition-colors duration-200 ${
+                    user.isActive
+                      ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                      : 'bg-green-100 text-green-600 hover:bg-green-200'
+                  }`}
+                >
+                  {user.isActive ? 'Deactivate' : 'Activate'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Edit User Modal */}
+        {showModal && selectedUser && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-red-600">Edit User</h3>
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    setSelectedUser(null);
+                  }}
+                  className="text-gray-400 hover:text-red-600 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                handleUpdateUser(selectedUser._id, {
+                  fullName: formData.get('fullName'),
+                  phone: formData.get('phone'),
+                  subscriptionStatus: formData.get('subscriptionStatus')
+                });
+              }}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      name="fullName"
+                      defaultValue={selectedUser?.fullName}
+                      required
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Phone</label>
+                    <input
+                      type="text"
+                      name="phone"
+                      defaultValue={selectedUser?.phone}
+                      required
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Subscription Status</label>
+                    <select
+                      name="subscriptionStatus"
+                      defaultValue={selectedUser?.subscriptionStatus}
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="active">Active</option>
+                      <option value="expired">Expired</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowModal(false);
+                      setSelectedUser(null);
+                    }}
+                    className="flex-1 px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors duration-200 font-semibold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 font-semibold"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
-export default Users; 
+export default Users;

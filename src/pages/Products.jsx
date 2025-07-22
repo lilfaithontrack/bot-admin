@@ -1,18 +1,5 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
-import {
-  Box, Typography, Paper, Grid, Avatar, Button, TextField, Chip, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, MenuItem, IconButton
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import ToggleOnIcon from '@mui/icons-material/ToggleOn';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CloseIcon from '@mui/icons-material/Close';
-import InventoryIcon from '@mui/icons-material/Inventory';
-
-const red = '#b91c1c';
-const gold = '#fbbf24';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -86,172 +73,282 @@ const Products = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 300 }}>
-        <CircularProgress sx={{ color: gold, mb: 2 }} size={48} />
-        <Typography variant="h6" color="text.secondary">Loading products...</Typography>
-      </Box>
+      <div className="flex flex-col items-center justify-center h-64 bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
+        <div className="text-lg text-gray-600">Loading products...</div>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ width: '100%', maxWidth: 1400, mx: 'auto', mt: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" fontWeight={700} color={red} mb={0.5}>Products</Typography>
-          <Typography variant="h6" color={gold} fontWeight={600}>Manage your product catalog</Typography>
-        </Box>
-        <Button
-          startIcon={<AddIcon />}
-          variant="contained"
-          sx={{
-            background: `linear-gradient(90deg, ${red} 60%, ${gold} 100%)`,
-            color: '#fff',
-            fontWeight: 700,
-            borderRadius: 2,
-            py: 1.2,
-            boxShadow: 2,
-            '&:hover': {
-              background: `linear-gradient(90deg, #991b1b 60%, #d97706 100%)`,
-            },
-          }}
-          onClick={() => {
-            setIsCreating(true);
-            setSelectedProduct(null);
-            setShowModal(true);
-          }}
-        >
-          Add Product
-        </Button>
-      </Box>
-      {/* Search */}
-      <Paper elevation={2} sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-        <TextField
-          label="Search Products"
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          fullWidth
-          InputProps={{ sx: { borderRadius: 2 } }}
-          placeholder="Search by name or category..."
-        />
-      </Paper>
-      {/* Products Grid */}
-      <Grid container spacing={3}>
-        {filteredProducts.map((product) => (
-          <Grid item xs={12} sm={6} md={4} key={product._id}>
-            <Paper elevation={4} sx={{ borderRadius: 3, overflow: 'hidden', boxShadow: 6, transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.03)', boxShadow: 12 } }}>
-              <Box sx={{ height: 180, bgcolor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div className="min-h-screen bg-white p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-red-600 mb-2">Products</h1>
+            <p className="text-xl text-gray-600">Manage your product catalog</p>
+          </div>
+          <button
+            onClick={() => {
+              setIsCreating(true);
+              setSelectedProduct(null);
+              setShowModal(true);
+            }}
+            className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 font-semibold"
+          >
+            <span>➕</span>
+            Add Product
+          </button>
+        </div>
+
+        {/* Search */}
+        <div className="bg-white rounded-2xl shadow-lg border border-red-100 p-6 mb-8">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search by name or category..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+            />
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-red-400">
+              🔍
+            </div>
+          </div>
+        </div>
+
+        {/* Products Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProducts.map((product) => (
+            <div key={product._id} className="bg-white rounded-2xl shadow-lg border border-red-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              {/* Product Image */}
+              <div className="h-48 bg-gray-100 flex items-center justify-center">
                 {product.images && product.images.length > 0 ? (
                   <img
                     src={product.images.find(img => img.isPrimary)?.url || product.images[0].url}
                     alt={product.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    className="w-full h-full object-cover"
                   />
                 ) : (
-                  <InventoryIcon sx={{ fontSize: 60, color: '#cbd5e1' }} />
+                  <div className="text-6xl text-gray-300">📦</div>
                 )}
-              </Box>
-              <Box sx={{ p: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="h6" fontWeight={700}>{product.name}</Typography>
-                  <Chip
-                    label={product.isActive ? 'Active' : 'Inactive'}
-                    sx={{
-                      bgcolor: product.isActive ? 'rgba(22,163,74,0.15)' : 'rgba(185,28,28,0.15)',
-                      color: product.isActive ? '#16a34a' : red,
-                      fontWeight: 700
-                    }}
-                  />
-                </Box>
-                <Typography variant="body2" color="text.secondary" mb={1}>{product.category}</Typography>
-                <Typography variant="body2" color="text.secondary" mb={2} sx={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.description}</Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Box>
-                    <Typography variant="h6" fontWeight={700} color={red}>${product.price}</Typography>
+              </div>
+
+              {/* Product Info */}
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-3">
+                  <h3 className="text-lg font-bold text-red-600 line-clamp-1">{product.name}</h3>
+                  <span className={`px-3 py-1 text-xs font-bold rounded-full ${
+                    product.isActive 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {product.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+
+                <p className="text-sm text-gray-500 mb-2">{product.category}</p>
+                <p className="text-sm text-gray-600 mb-4 line-clamp-2">{product.description}</p>
+
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl font-bold text-red-600">${product.price}</span>
                     {product.originalPrice > product.price && (
-                      <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'line-through', ml: 1 }}>
-                        ${product.originalPrice}
-                      </Typography>
+                      <span className="text-sm text-gray-400 line-through">${product.originalPrice}</span>
                     )}
-                  </Box>
-                  <Typography variant="body2" color="text.secondary">Stock: {product.stock}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <IconButton color="primary" onClick={() => { setSelectedProduct(product); setIsCreating(false); setShowModal(true); }}><EditIcon /></IconButton>
-                  <IconButton color={product.isActive ? 'error' : 'success'} onClick={() => handleToggleProductStatus(product._id, product.isActive)}>{product.isActive ? <ToggleOffIcon /> : <ToggleOnIcon />}</IconButton>
-                  <IconButton color="error" onClick={() => handleDeleteProduct(product._id)}><DeleteIcon /></IconButton>
-                </Box>
-              </Box>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
-      {/* Product Modal */}
-      <Dialog open={showModal} onClose={() => { setShowModal(false); setSelectedProduct(null); setIsCreating(false); }} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ bgcolor: gold, color: red, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {isCreating ? 'Add New Product' : 'Edit Product'}
-          <IconButton onClick={() => { setShowModal(false); setSelectedProduct(null); setIsCreating(false); }}><CloseIcon /></IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <Box component="form" id="product-form" onSubmit={e => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const productData = {
-              name: formData.get('name'),
-              description: formData.get('description'),
-              price: parseFloat(formData.get('price')),
-              originalPrice: parseFloat(formData.get('originalPrice')),
-              category: formData.get('category'),
-              stock: parseInt(formData.get('stock')),
-              isActive: formData.get('isActive') === 'true',
-              featured: formData.get('featured') === 'true'
-            };
-            if (isCreating) {
-              handleCreateProduct(productData);
-            } else {
-              handleUpdateProduct(selectedProduct._id, productData);
-            }
-          }} sx={{ mt: 2 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField label="Product Name" name="name" defaultValue={selectedProduct?.name} required fullWidth margin="normal" />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField label="Category" name="category" defaultValue={selectedProduct?.category} required fullWidth margin="normal" />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField label="Price" name="price" type="number" step="0.01" defaultValue={selectedProduct?.price} required fullWidth margin="normal" />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField label="Original Price" name="originalPrice" type="number" step="0.01" defaultValue={selectedProduct?.originalPrice} required fullWidth margin="normal" />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField label="Stock" name="stock" type="number" defaultValue={selectedProduct?.stock || 0} required fullWidth margin="normal" />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField label="Status" name="isActive" select defaultValue={selectedProduct?.isActive?.toString() || 'true'} fullWidth margin="normal">
-                  <MenuItem value="true">Active</MenuItem>
-                  <MenuItem value="false">Inactive</MenuItem>
-                </TextField>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField label="Featured" name="featured" select defaultValue={selectedProduct?.featured?.toString() || 'false'} fullWidth margin="normal">
-                  <MenuItem value="true">Yes</MenuItem>
-                  <MenuItem value="false">No</MenuItem>
-                </TextField>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField label="Description" name="description" defaultValue={selectedProduct?.description} required fullWidth margin="normal" multiline rows={3} />
-              </Grid>
-            </Grid>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => { setShowModal(false); setSelectedProduct(null); setIsCreating(false); }} color="inherit">Cancel</Button>
-          <Button type="submit" form="product-form" variant="contained" sx={{ background: `linear-gradient(90deg, ${red} 60%, ${gold} 100%)`, color: '#fff', fontWeight: 700 }}>{isCreating ? 'Create Product' : 'Save Changes'}</Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+                  </div>
+                  <span className="text-sm text-gray-500">Stock: {product.stock}</span>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setSelectedProduct(product);
+                      setIsCreating(false);
+                      setShowModal(true);
+                    }}
+                    className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm font-semibold"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleToggleProductStatus(product._id, product.isActive)}
+                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 ${
+                      product.isActive
+                        ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                        : 'bg-green-100 text-green-600 hover:bg-green-200'
+                    }`}
+                  >
+                    {product.isActive ? 'Deactivate' : 'Activate'}
+                  </button>
+                  <button
+                    onClick={() => handleDeleteProduct(product._id)}
+                    className="px-3 py-2 bg-gray-100 text-red-600 rounded-lg hover:bg-red-50 transition-colors duration-200 text-sm font-semibold"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Product Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-red-600">
+                  {isCreating ? 'Add New Product' : 'Edit Product'}
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    setSelectedProduct(null);
+                    setIsCreating(false);
+                  }}
+                  className="text-gray-400 hover:text-red-600 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const productData = {
+                  name: formData.get('name'),
+                  description: formData.get('description'),
+                  price: parseFloat(formData.get('price')),
+                  originalPrice: parseFloat(formData.get('originalPrice')),
+                  category: formData.get('category'),
+                  stock: parseInt(formData.get('stock')),
+                  isActive: formData.get('isActive') === 'true',
+                  featured: formData.get('featured') === 'true'
+                };
+
+                if (isCreating) {
+                  handleCreateProduct(productData);
+                } else {
+                  handleUpdateProduct(selectedProduct._id, productData);
+                }
+              }}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Product Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      defaultValue={selectedProduct?.name}
+                      required
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Category</label>
+                    <input
+                      type="text"
+                      name="category"
+                      defaultValue={selectedProduct?.category}
+                      required
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Price</label>
+                    <input
+                      type="number"
+                      name="price"
+                      step="0.01"
+                      defaultValue={selectedProduct?.price}
+                      required
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Original Price</label>
+                    <input
+                      type="number"
+                      name="originalPrice"
+                      step="0.01"
+                      defaultValue={selectedProduct?.originalPrice}
+                      required
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Stock</label>
+                    <input
+                      type="number"
+                      name="stock"
+                      defaultValue={selectedProduct?.stock || 0}
+                      required
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Status</label>
+                    <select
+                      name="isActive"
+                      defaultValue={selectedProduct?.isActive?.toString() || 'true'}
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+                    >
+                      <option value="true">Active</option>
+                      <option value="false">Inactive</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Featured</label>
+                    <select
+                      name="featured"
+                      defaultValue={selectedProduct?.featured?.toString() || 'false'}
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+                    >
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <label className="block text-sm font-semibold text-red-600 mb-2">Description</label>
+                  <textarea
+                    name="description"
+                    defaultValue={selectedProduct?.description}
+                    required
+                    rows="3"
+                    className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+                  />
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowModal(false);
+                      setSelectedProduct(null);
+                      setIsCreating(false);
+                    }}
+                    className="flex-1 px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors duration-200 font-semibold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 font-semibold"
+                  >
+                    {isCreating ? 'Create Product' : 'Save Changes'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
-export default Products; 
+export default Products;

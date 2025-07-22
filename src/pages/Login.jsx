@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Box, Typography, TextField, Button, Paper, CircularProgress, Avatar, Divider } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-
-const red = '#b91c1c';
-const gold = '#fbbf24';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -29,101 +24,81 @@ const Login = () => {
   };
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: '#fff',
-      p: 2,
-      fontFamily: 'Inter, system-ui, sans-serif',
-    }}>
-      <Paper elevation={8} sx={{
-        maxWidth: 400,
-        width: '100%',
-        p: 4,
-        borderRadius: 5,
-        bgcolor: '#fff',
-        border: `1.5px solid ${gold}`,
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        boxShadow: '0 4px 24px 0 rgba(185,28,28,0.08)',
-      }}>
-        <Avatar sx={{ bgcolor: gold, width: 60, height: 60, mb: 1.5, fontSize: 32, fontWeight: 'bold', border: `2.5px solid ${red}`, boxShadow: 2 }}>
-          <LockOutlinedIcon sx={{ fontSize: 32, color: red }} />
-        </Avatar>
-        <Typography variant="h5" fontWeight={700} color={red} mb={0.5} letterSpacing={1} sx={{ fontFamily: 'inherit', fontSize: '1.3rem' }}>
-          Fetan Admin
-        </Typography>
-        <Typography variant="subtitle2" color={gold} fontWeight={600} mb={0.5} sx={{ fontFamily: 'inherit', fontSize: '1rem' }}>
-          Welcome Back
-        </Typography>
-        <Typography variant="body2" color="text.secondary" mb={2} sx={{ fontFamily: 'inherit', fontSize: '0.85rem' }}>
-          Sign in to your admin account
-        </Typography>
-        <Divider sx={{ width: '100%', mb: 2, bgcolor: gold, opacity: 0.5 }} />
-        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-          <TextField
-            label="Email address"
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            fullWidth
-            required
-            margin="normal"
-            autoComplete="email"
-            InputProps={{ sx: { borderRadius: 2, bgcolor: '#fff', fontSize: '0.95rem' } }}
-            InputLabelProps={{ sx: { fontSize: '0.95rem' } }}
-          />
-          <TextField
-            label="Password"
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            fullWidth
-            required
-            margin="normal"
-            autoComplete="current-password"
-            InputProps={{ sx: { borderRadius: 2, bgcolor: '#fff', fontSize: '0.95rem' } }}
-            InputLabelProps={{ sx: { fontSize: '0.95rem' } }}
-          />
-          {error && (
-            <Typography color="error" sx={{ mt: 1, mb: 1, fontWeight: 500, textAlign: 'center', fontSize: '0.9rem' }}>
-              {error}
-            </Typography>
-          )}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            disabled={loading}
-            sx={{
-              mt: 2,
-              py: 1.2,
-              fontWeight: 700,
-              fontSize: '1rem',
-              background: `linear-gradient(90deg, ${red} 60%, ${gold} 100%)`,
-              color: '#fff',
-              boxShadow: 2,
-              borderRadius: 2,
-              letterSpacing: 0.5,
-              '&:hover': {
-                background: `linear-gradient(90deg, #991b1b 60%, #d97706 100%)`,
-              },
-            }}
-          >
-            {loading ? <CircularProgress size={22} sx={{ color: gold }} /> : 'Sign in'}
-          </Button>
-        </form>
-      </Paper>
-      <Typography variant="body2" color={gold} sx={{ mt: 3, opacity: 0.8, fontFamily: 'inherit', fontSize: '0.85rem' }}>
-        &copy; {new Date().getFullYear()} Fetan Admin. All rights reserved.
-      </Typography>
-    </Box>
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Logo/Header */}
+        <div className="text-center mb-8">
+          <div className="w-20 h-20 bg-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl text-white font-bold">🔒</span>
+          </div>
+          <h1 className="text-4xl font-bold text-red-600 mb-2">Fetan Admin</h1>
+          <p className="text-xl text-gray-600">Welcome Back</p>
+          <p className="text-gray-500">Sign in to your admin account</p>
+        </div>
+
+        {/* Login Form */}
+        <div className="bg-white rounded-2xl shadow-2xl border border-red-100 p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-red-600 mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+                placeholder="Enter your email"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-red-600 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
+                placeholder="Enter your password"
+              />
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                <p className="text-red-600 font-semibold text-center">{error}</p>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <span>Signing in...</span>
+                </div>
+              ) : (
+                'Sign In'
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-8">
+          <p className="text-gray-500">
+            &copy; {new Date().getFullYear()} Fetan Admin. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default Login; 
+export default Login;

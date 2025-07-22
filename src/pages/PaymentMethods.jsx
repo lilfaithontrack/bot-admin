@@ -56,86 +56,122 @@ const PaymentMethods = () => {
     }
   };
 
+  const getTypeIcon = (type) => {
+    switch (type) {
+      case 'bank': return '🏦';
+      case 'mobile_money': return '📱';
+      case 'crypto': return '₿';
+      case 'card': return '💳';
+      default: return '💰';
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Loading payment methods...</div>
+      <div className="flex flex-col items-center justify-center h-64 bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
+        <div className="text-lg text-gray-600">Loading payment methods...</div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Payment Methods</h1>
-          <p className="text-gray-600">Manage payment options</p>
+    <div className="min-h-screen bg-white p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-red-600 mb-2">Payment Methods</h1>
+            <p className="text-xl text-gray-600">Manage payment options</p>
+          </div>
+          <button
+            onClick={() => {
+              setIsCreating(true);
+              setSelectedPaymentMethod(null);
+              setShowModal(true);
+            }}
+            className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 font-semibold"
+          >
+            <span>💳</span>
+            Add Payment Method
+          </button>
         </div>
-        <button
-          onClick={() => {
-            setIsCreating(true);
-            setSelectedPaymentMethod(null);
-            setShowModal(true);
-          }}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-        >
-          Add Payment Method
-        </button>
-      </div>
 
-      {/* Payment Methods Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {paymentMethods.map((paymentMethod) => (
-          <div key={paymentMethod._id} className="bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-medium text-gray-900">{paymentMethod.name}</h3>
-              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                paymentMethod.isActive 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-red-100 text-red-800'
-              }`}>
-                {paymentMethod.isActive ? 'Active' : 'Inactive'}
-              </span>
-            </div>
-            <div className="space-y-2 mb-4">
-              <div className="text-sm text-gray-600">{paymentMethod.description}</div>
-              <div className="text-sm text-gray-500">Type: {paymentMethod.type}</div>
+        {/* Payment Methods Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {paymentMethods.map((paymentMethod) => (
+            <div key={paymentMethod._id} className="bg-white rounded-2xl shadow-lg border border-red-100 p-6 hover:shadow-xl transition-shadow duration-300">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center text-white text-2xl">
+                    {getTypeIcon(paymentMethod.type)}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-red-600">{paymentMethod.name}</h3>
+                    <p className="text-sm text-gray-500 capitalize">{paymentMethod.type.replace('_', ' ')}</p>
+                  </div>
+                </div>
+                <span className={`px-3 py-1 text-xs font-bold rounded-full ${
+                  paymentMethod.isActive 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {paymentMethod.isActive ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+
+              <p className="text-gray-600 mb-4 line-clamp-2">{paymentMethod.description}</p>
+              
               {paymentMethod.accountInfo && (
-                <div className="text-sm text-gray-500">
-                  Account: {paymentMethod.accountInfo}
+                <div className="bg-red-50 rounded-lg p-3 mb-4 border border-red-100">
+                  <p className="text-sm text-gray-700">
+                    <span className="font-semibold text-red-600">Account:</span> {paymentMethod.accountInfo}
+                  </p>
                 </div>
               )}
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => {
-                  setSelectedPaymentMethod(paymentMethod);
-                  setIsCreating(false);
-                  setShowModal(true);
-                }}
-                className="flex-1 px-3 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDeletePaymentMethod(paymentMethod._id)}
-                className="px-3 py-2 text-sm font-medium text-red-600 border border-red-600 rounded-md hover:bg-red-50"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
 
-      {/* Payment Method Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                {isCreating ? 'Add New Payment Method' : 'Edit Payment Method'}
-              </h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setSelectedPaymentMethod(paymentMethod);
+                    setIsCreating(false);
+                    setShowModal(true);
+                  }}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 font-semibold"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDeletePaymentMethod(paymentMethod._id)}
+                  className="flex-1 px-4 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors duration-200 font-semibold"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Payment Method Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-red-600">
+                  {isCreating ? 'Add New Payment Method' : 'Edit Payment Method'}
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    setSelectedPaymentMethod(null);
+                    setIsCreating(false);
+                  }}
+                  className="text-gray-400 hover:text-red-600 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
               <form onSubmit={(e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
@@ -155,38 +191,32 @@ const PaymentMethods = () => {
               }}>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Name
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Name</label>
                     <input
                       type="text"
                       name="name"
                       defaultValue={selectedPaymentMethod?.name}
                       required
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Description
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Description</label>
                     <textarea
                       name="description"
-                      rows="3"
+                      rows={3}
                       defaultValue={selectedPaymentMethod?.description}
                       required
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Type
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Type</label>
                     <select
                       name="type"
                       defaultValue={selectedPaymentMethod?.type}
                       required
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                     >
                       <option value="bank">Bank Transfer</option>
                       <option value="mobile_money">Mobile Money</option>
@@ -196,32 +226,29 @@ const PaymentMethods = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Account Information
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Account Information</label>
                     <input
                       type="text"
                       name="accountInfo"
                       defaultValue={selectedPaymentMethod?.accountInfo}
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                       placeholder="Account number, phone number, etc."
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Status
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Status</label>
                     <select
                       name="isActive"
                       defaultValue={selectedPaymentMethod?.isActive?.toString() || 'true'}
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                     >
                       <option value="true">Active</option>
                       <option value="false">Inactive</option>
                     </select>
                   </div>
                 </div>
-                <div className="flex justify-end space-x-3 mt-6">
+
+                <div className="flex gap-3 mt-6">
                   <button
                     type="button"
                     onClick={() => {
@@ -229,13 +256,13 @@ const PaymentMethods = () => {
                       setSelectedPaymentMethod(null);
                       setIsCreating(false);
                     }}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                    className="flex-1 px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors duration-200 font-semibold"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                    className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 font-semibold"
                   >
                     {isCreating ? 'Create Payment Method' : 'Save Changes'}
                   </button>
@@ -243,10 +270,10 @@ const PaymentMethods = () => {
               </form>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
 
-export default PaymentMethods; 
+export default PaymentMethods;

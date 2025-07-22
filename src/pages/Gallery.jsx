@@ -58,53 +58,56 @@ const Gallery = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 bg-black">
-        <div className="text-lg text-white">Loading gallery...</div>
+      <div className="flex flex-col items-center justify-center h-64 bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
+        <div className="text-lg text-gray-600">Loading gallery...</div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 bg-black min-h-screen px-2 md:px-8 py-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Gallery</h1>
-          <p className="text-gray-300">Manage images and media content</p>
+    <div className="min-h-screen bg-white p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-red-600 mb-2">Gallery</h1>
+            <p className="text-xl text-gray-600">Manage images and media content</p>
+          </div>
+          <button
+            onClick={() => {
+              setIsCreating(true);
+              setSelectedItem(null);
+              setShowModal(true);
+            }}
+            className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 font-semibold"
+          >
+            <span>🖼️</span>
+            Add Item
+          </button>
         </div>
-        <button
-          onClick={() => {
-            setIsCreating(true);
-            setSelectedItem(null);
-            setShowModal(true);
-          }}
-          className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 shadow-md transition"
-        >
-          Add Item
-        </button>
-      </div>
 
-      {/* Gallery Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-        {galleryItems.map((item) => (
-          <div key={item._id} className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col hover-scale transition">
-            <div className="aspect-w-16 aspect-h-9 bg-gray-200">
-              {item.imageUrl ? (
-                <img
-                  src={item.imageUrl}
-                  alt={item.title}
-                  className="w-full h-48 object-cover"
-                />
-              ) : (
-                <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                  <span className="text-gray-400">No image</span>
-                </div>
-              )}
-            </div>
-            <div className="p-4 flex flex-col flex-1 justify-between">
-              <div>
+        {/* Gallery Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+          {galleryItems.map((item) => (
+            <div key={item._id} className="bg-white rounded-2xl shadow-lg border border-red-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <div className="aspect-w-16 aspect-h-9 bg-gray-100">
+                {item.imageUrl ? (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-48 object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-48 bg-red-50 flex items-center justify-center border-b border-red-100">
+                    <span className="text-4xl text-red-300">🖼️</span>
+                  </div>
+                )}
+              </div>
+              <div className="p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-sm font-semibold text-black">{item.title}</h3>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                  <h3 className="text-lg font-bold text-red-600 line-clamp-1">{item.title}</h3>
+                  <span className={`px-2 py-1 text-xs font-bold rounded-full ${
                     item.isActive 
                       ? 'bg-green-100 text-green-800' 
                       : 'bg-red-100 text-red-800'
@@ -112,39 +115,55 @@ const Gallery = () => {
                     {item.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 mb-3 line-clamp-2">{item.description}</p>
-              </div>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-2">
-                <button
-                  onClick={() => {
-                    setSelectedItem(item);
-                    setIsCreating(false);
-                    setShowModal(true);
-                  }}
-                  className="flex-1 px-3 py-2 text-sm font-medium text-red-600 border border-red-600 rounded-md hover:bg-red-50 transition"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteGalleryItem(item._id)}
-                  className="flex-1 px-3 py-2 text-sm font-medium text-white bg-black border border-red-600 rounded-md hover:bg-red-600 hover:text-white transition"
-                >
-                  Delete
-                </button>
+                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.description}</p>
+                {item.category && (
+                  <div className="bg-red-50 rounded-lg px-3 py-1 mb-3 border border-red-100">
+                    <span className="text-xs font-semibold text-red-600">{item.category}</span>
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setSelectedItem(item);
+                      setIsCreating(false);
+                      setShowModal(true);
+                    }}
+                    className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm font-semibold"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteGalleryItem(item._id)}
+                    className="flex-1 px-3 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors duration-200 text-sm font-semibold"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/* Gallery Item Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 px-2">
-          <div className="relative w-full max-w-md mx-auto p-6 border border-red-600 shadow-2xl rounded-xl bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-bold text-black mb-4">
-                {isCreating ? 'Add New Gallery Item' : 'Edit Gallery Item'}
-              </h3>
+        {/* Gallery Item Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-red-600">
+                  {isCreating ? 'Add New Gallery Item' : 'Edit Gallery Item'}
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    setSelectedItem(null);
+                    setIsCreating(false);
+                  }}
+                  className="text-gray-400 hover:text-red-600 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
               <form onSubmit={(e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
@@ -164,66 +183,57 @@ const Gallery = () => {
               }}>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-black">
-                      Title
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Title</label>
                     <input
                       type="text"
                       name="title"
                       defaultValue={selectedItem?.title}
                       required
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white text-black"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-black">
-                      Description
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Description</label>
                     <textarea
                       name="description"
-                      rows="3"
+                      rows={3}
                       defaultValue={selectedItem?.description}
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white text-black"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-black">
-                      Image URL
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Image URL</label>
                     <input
                       type="url"
                       name="imageUrl"
                       defaultValue={selectedItem?.imageUrl}
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white text-black"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                       placeholder="https://example.com/image.jpg"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-black">
-                      Category
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Category</label>
                     <input
                       type="text"
                       name="category"
                       defaultValue={selectedItem?.category}
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white text-black"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-black">
-                      Status
-                    </label>
+                    <label className="block text-sm font-semibold text-red-600 mb-2">Status</label>
                     <select
                       name="isActive"
                       defaultValue={selectedItem?.isActive?.toString() || 'true'}
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-red-500 focus:border-red-500 bg-white text-black"
+                      className="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:outline-none transition-colors duration-200"
                     >
                       <option value="true">Active</option>
                       <option value="false">Inactive</option>
                     </select>
                   </div>
                 </div>
-                <div className="flex justify-end space-x-3 mt-6">
+
+                <div className="flex gap-3 mt-6">
                   <button
                     type="button"
                     onClick={() => {
@@ -231,13 +241,13 @@ const Gallery = () => {
                       setSelectedItem(null);
                       setIsCreating(false);
                     }}
-                    className="px-4 py-2 text-sm font-medium text-black bg-gray-100 rounded-md hover:bg-gray-200 border border-gray-300"
+                    className="flex-1 px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors duration-200 font-semibold"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 shadow-md"
+                    className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 font-semibold"
                   >
                     {isCreating ? 'Create Item' : 'Save Changes'}
                   </button>
@@ -245,10 +255,10 @@ const Gallery = () => {
               </form>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
 
-export default Gallery; 
+export default Gallery;
