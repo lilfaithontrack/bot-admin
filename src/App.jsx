@@ -12,7 +12,6 @@ import Gallery from './pages/Gallery';
 import Coupons from './pages/Coupons';
 import Agents from './pages/Agents';
 import Layout from './components/Layout';
-import './App.css';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {

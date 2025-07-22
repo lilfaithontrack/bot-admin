@@ -17,6 +17,14 @@
     color: #1f2937;
     line-height: 1.6;
   }
+  
+  #root {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    background: #ffffff;
+  }
 }
 
 @layer components {
@@ -46,6 +54,40 @@
   
   .modal-content {
     @apply bg-white rounded-2xl shadow-2xl w-full max-w-md p-6;
+  }
+  
+  .logo {
+    height: 6em;
+    padding: 1.5em;
+    will-change: filter;
+    transition: filter 300ms;
+  }
+
+  .logo:hover {
+    filter: drop-shadow(0 0 2em #dc2626aa);
+  }
+
+  .logo.react:hover {
+    filter: drop-shadow(0 0 2em #61dafbaa);
+  }
+  
+  .read-the-docs {
+    color: #dc2626;
+  }
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
   }
 }
 
